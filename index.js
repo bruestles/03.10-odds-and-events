@@ -8,7 +8,7 @@ let bank = [];
  * @param {number} n - the number to add
  */
 function sortNumber() {
-  n = bank.pop();
+  n = bank.shift();
   // bank = bank.filter((_, i) => i < bank.length);
   if (n % 2 === 0) {
     evens.push(n);
