@@ -7,22 +7,14 @@ let bank = [];
  * Adds the first number in the bank to the odds or evens array depending on whether it is odd or even.
  * @param {number} n - the number to add
  */
-function sortNumber(n) {
+function sortNumber() {
+  n = bank.pop();
+  // bank = bank.filter((_, i) => i < bank.length);
   if (n % 2 === 0) {
     evens.push(n);
   } else {
     odds.push(n);
   }
-  render();
-}
-
-/**
- * Moves the first number in the bank to the odds or evens array depending on whether it is odd or even.
- */
-function moveNumber(n) {
-  if (bank.length === 0) return;
-  const n = bank.shift();
-  sortNumber(n);
   render();
 }
 
@@ -33,66 +25,65 @@ function OddEvenForm() {
       Add a number to the bank
       <input name="number" type="number" />
     </label>
-    <button class="buttons" id="addNum">Add number</button>
-    <button class="buttons" id="sort1" >Sort 1</button>
-    <button class="buttons" id="sortAll" >Sort All</button>
+    <button id="addNum">Add number</button>
+    <button id="sort1" >Sort 1</button>
+    <button id="sortAll" >Sort All</button>
   `;
-  // Add the event listener and take action for the respecitve button
-  const $buttons = $form.querySelectorAll(".buttons");
-  $buttons.addEventListener("click", (event) => {
-    event.preventDefault();
-    if (event.target.textContent === "addNum") {
-      const formData = new FormData($form);
-      const n = parseInt(formData.get("number"));
-      alert("Button clicked");
-      alert("Add number button clicked");
-      moveNumber(n);
-    } else if (event.target.textContent === "sort1") {
-      sortNumber();
-    } else if (event.target.textContent === "sortAll") {
-      while (bank.length > 0) {
-        moveNumber();
-      };
-    };
-    return $form;
-    }
 
-// function BankForm() {
-//   const $bankform = document.createElement("p");
-//   $bankform.innerHTML = `
-//     <p>
-//       Bank
-//     </p>
-//   `;
-//   const bankHeading = document.createElement("h3");
-//   bankHeading.textContent = "Bank";
-//   document.body.appendChild(bankHeading);
-//   // const $bankList = document.createElement("p");
-//   // $bankList.textContent = `Bank: ${bank.join(", ")}`;
-//   // $bankform.appendChild($bankList);
-//   return $bankform;
-// };
+  // Add the event listener and take action for the respecitve button
+  const $buttons = $form.querySelectorAll("button");
+  for (const $button of $buttons) {
+    $button.addEventListener("click", (event) => {
+      event.preventDefault();
+      // Moves number to bank
+      if ($button.id === "addNum") {
+        const formData = new FormData($form);
+        const n = parseInt(formData.get("number"));
+        bank.push(n);
+        console.log("bank after push:", bank);
+        render();
+      } // Sorts one number from bank to odds or evens
+      else if ($button.id === "sort1") {
+        sortNumber();
+      } // Sorts all numbers from bank to odds or evens
+      else if ($button.id === "sortAll") {
+        while (bank.length > 0) {
+          sortNumber();
+        }
+        bank = [];
+      } else {
+        alert("Something went wrong.");
+      }
+    });
+  }
+  return $form;
+}
+
+function NumbersToAdd(numbers) {
+  const $numbersToAdd = document.createElement("span");
+
+  // $numbersToAdd.textContent = `${numbers.join(", ")}`;
+  $numbersToAdd.innerHTML = `${numbers.join(", ")}`;
+  return $numbersToAdd;
+}
 
 // === Render ===
-// function render() {
-//   const $app = document.querySelector("#app");
-//   $app.innerHTML = `
-//     <h1>Odds and Events</h1>
-//     <OddEvenForm></OddEvenForm>
-//     <main>
-//       <body>
-//         <h3>Bank</h3>
-//         <input style="width: 98%;" value="${bank.join(", ")}" readonly />
-//         <h3>Odds</h3>
-//         <input style="width: 98%;" value="${odds.join(", ")}" readonly />
-//         <h3>Evens</h3>
-//         <input style="width: 98%;" value="${evens.join(", ")}" readonly />
-//       </body>
-//       <OddEvenForm></OddEvenForm>
+function render() {
+  const $app = document.querySelector("#app");
+  $app.innerHTML = `
+    <h1>Odds and Events</h1>
+    <OddEvenForm></OddEvenForm>
+      <h3>Bank</h3>
+      <SortingForm id="Bank"></SortingForm>
+      <h3>Odds</h3>
+      <SortingForm id="Odds"></SortingForm>
+      <h3>Evens</h3>
+      <SortingForm id="Evens"></SortingForm>
+  `;
+  $app.querySelector("OddEvenForm").replaceWith(OddEvenForm());
+  $app.querySelector("SortingForm#Bank").replaceWith(NumbersToAdd(bank));
+  $app.querySelector("SortingForm#Odds").replaceWith(NumbersToAdd(odds));
+  $app.querySelector("SortingForm#Evens").replaceWith(NumbersToAdd(evens));
+}
 
-//     </main>
-//   `;
-//   $app.querySelector("OddEvenForm").replaceWith(OddEvenForm());
-//   $app.querySelector("BankForm").replaceWith(BankForm());
-// }
-// render();
+render();
